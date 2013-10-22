@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+
+<project name="Celtrade" basedir="." default="usage">
+    <property file="build.properties"/>
+    <property name="src.dir" value="src"/>
+    <property name="web.dir" value="WebContent"/>
+    <property name="javadoc.dir" value="doc"/>
+    <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
+    <property name="name" value="Celtrade"/>
+    <property name="war.file" value="build/${name}.war" />
+
+    <path id="master-classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${build.dir}"/>
+    </path>
+    
+    <target name="javadoc">
+      <javadoc packagenames="com.Phoenix.*" sourcepath="${src.dir}" 
+      destdir="doc" version="true" windowtitle="Fax Application">
+        <doctitle><![CDATA[<h1>= Fax Application 
+          =</h1>]]></doctitle>
+        <bottom><![CDATA[Copyright © 2011. All 
+          Rights Reserved.]]></bottom>
+        <group title="util packages" packages="faxapp.util.*"/>
+        <group title="web packages" packages="faxapp.web.*"/>
+        <group title="data packages" 
+          packages="faxapp.entity.*:faxapp.dao.*"/>
+      </javadoc>
+    </target>
+
+    <target name="usage">
+        <echo message=""/>
+        <echo message="${name} build file"/>
+        <echo message="-----------------------------------"/>
+        <echo message=""/>
+        <echo message="Available targets are:"/>
+        <echo message=""/>
+        <echo message="deploy    --> Deploy application 
+          as directory"/>
+        <echo message="deploywar --> Deploy application 
+          as a WAR file"/>
+        <echo message=""/>
+    </target>
+
+    <target name="build" description="Compile main 
+      source tree java files">
+        <mkdir dir="${build.dir}"/>
+        <javac destdir="${build.dir}" source="1.7" 
+          target="1.7" debug="true"
+          deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="master-classpath"/>
+        </javac>
+    </target>
+
+    <target name="deploy" depends="build" 
+      description="Deploy application">
+        <copy todir="${deploy.path}/${name}" 
+          preservelastmodified="true">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="deploywar" depends="build" 
+      description="Deploy application as a WAR file">
+        <war destfile="build/${name}.war"
+             webxml="${web.dir}/WEB-INF/web.xml">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+        </war>
+        <!--<copy todir="${deploy.path}" preservelastmodified="true">
+            <fileset dir=".">
+                <include name="*.war"/>
+            </fileset>
+        </copy>-->
+	<deploy
+		url="${tomcat.manager.url}"
+		username="${tomcat.manager.username}"
+		password="${tomcat.manager.password}"
+		path="/${name}"
+		update="true"
+		war="file:${war.file}"
+	/>
+    </target>
+	
+	<target name="deploywarLive" depends="build" 
+	      description="Deploy application as a WAR file">
+	        <war destfile="build/${name}.war"
+	             webxml="${web.dir}/WEB-INF/web.xml">
+	            <fileset dir="${web.dir}">
+	                <include name="**/*.*"/>
+	            </fileset>
+	        </war>
+	        <!--<copy todir="${deploy.path}" preservelastmodified="true">
+	            <fileset dir=".">
+	                <include name="*.war"/>
+	            </fileset>
+	        </copy>-->
+		<deploy
+			url="http://netlinesolutions.ca:8080/manager/text"
+			username="ajaypal"
+			password="azer893"
+			path="/${name}"
+			update="true"
+			war="file:${war.file}"
+		/>
+	    </target>
+	
+	
+    
+<!--	<target name="undeploy">
+		<undeploy url="${tomcat.manager.url}"
+	 		username="${tomcat.manager.username}"
+			password="${tomcat.manager.password}"
+			path="/${name}" />
+	</target> -->
+
+    <target name="clean" description="Clean output directories">
+        <delete>
+            <fileset dir="${build.dir}">
+                <include name="**/*.class"/>
+            </fileset>
+        </delete>
+    </target>
+    <!-- ============================================================ -->
+    <!-- Tomcat tasks -->
+    <!-- ============================================================ -->
+
+    <path id="catalina-ant-classpath">
+        <!-- We need the Catalina jars for Tomcat -->
+        <!--  * for other app servers - check the docs -->
+        <fileset dir="${appserver.lib}">
+            <include name="catalina-ant.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef name="deploy" 
+        classname="org.apache.catalina.ant.DeployTask">
+        <classpath refid="catalina-ant-classpath"/>
+    </taskdef>
+<!--	<taskdef name="undeploy" 
+	classname="org.apache.catalina.ant.UndeployTask" />
+	<classpath refid="catalina-ant-classpath"/> -->
+    <taskdef name="reload" 
+        classname="org.apache.catalina.ant.ReloadTask">
+        <classpath refid="catalina-ant-classpath"/>
+    </taskdef>
+    <taskdef name="list" 
+        classname="org.apache.catalina.ant.ListTask">
+        <classpath refid="catalina-ant-classpath"/>
+    </taskdef>
+    <taskdef name="start" 
+        classname="org.apache.catalina.ant.StartTask">
+        <classpath refid="catalina-ant-classpath"/>
+    </taskdef>
+    <taskdef name="stop" 
+         classname="org.apache.catalina.ant.StopTask">
+        <classpath refid="catalina-ant-classpath"/>
+    </taskdef>
+
+    <target name="reload" description="Reload application in Tomcat">
+        <reload url="${tomcat.manager.url}"
+                 username="${tomcat.manager.username}"
+                 password="${tomcat.manager.password}"
+                 path="/${name}"/>
+    </target>
+</project>

@@ -1,0 +1,41 @@
+-- Departments --
+
+insert into department(depName)values('Production');
+insert into department(depName)values('Purchasing');
+insert into department(depName)values('Sales & Orders');
+insert into department(depName)values('Inventory');
+insert into department(depName)values('Shipping/Recieving');
+insert into department(depName)values('R&D/QA');
+
+-- Users --
+
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user1',md5('password'),'user1@celtrade.ca',1,0,0,0,0,0,0);
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user2',md5('password'),'user2@celtrade.ca',2,0,0,0,0,0,0);
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user3',md5('password'),'user3@celtrade.ca',3,0,0,0,0,0,0);
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user4',md5('password'),'user4@celtrade.ca',4,0,0,0,0,0,0);
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user5',md5('password'),'user5@celtrade.ca',5,0,0,0,0,0,0);
+insert into users(username,password,email,department,canAddNewOrder,canViewNewOrder,canAddScOrder,canViewScOrder,canAddWorkOrder,canViewWorkOrder)values('user6',md5('password'),'user6@celtrade.ca',6,0,0,0,0,0,0);
+
+-- Status --
+
+insert into Status(type)values('OPEN');
+insert into Status(type)values('CLOSED');
+
+-- Priority --
+
+insert into issuePriority(priority)values('LOW');
+insert into issuePriority(priority)values('MED');
+insert into issuePriority(priority)values('HIGH');
+
+set FOREIGN_KEY_CHECKS=0;
+truncate table issueOpen;
+truncate table issueClosed;
+truncate table Issues;
+truncate table issueOpen;
+truncate table comments;
+truncate table sessions;
+set FOREIGN_KEY_CHECKS=1;
+
+
+
+

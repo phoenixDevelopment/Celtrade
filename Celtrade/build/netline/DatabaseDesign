@@ -1,0 +1,403 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+ALTER TABLE `celtrade`.`users` CHANGE COLUMN `canAddNewOrder` `canAddNewOrder` TINYINT(1) NOT NULL DEFAULT false  , CHANGE COLUMN `canViewNewOrder` `canViewNewOrder` TINYINT(1) NOT NULL DEFAULT false COMMENT '	'  , CHANGE COLUMN `canAddScOrder` `canAddScOrder` TINYINT(1) NOT NULL DEFAULT false  , CHANGE COLUMN `canViewScOrder` `canViewScOrder` TINYINT(1) NOT NULL DEFAULT false  , CHANGE COLUMN `canAddWorkOrder` `canAddWorkOrder` TINYINT(1) NOT NULL DEFAULT false  , CHANGE COLUMN `canViewWorkOrder` `canViewWorkOrder` TINYINT(1) NOT NULL DEFAULT false  ;
+
+ALTER TABLE `celtrade`.`issueClosed` CHANGE COLUMN `closedAt` `closedAt` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`issueOpen` CHANGE COLUMN `openedTime` `openedTime` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`issueResolved` CHANGE COLUMN `resolvedAT` `resolvedAT` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`comments` CHANGE COLUMN `commented` `commented` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`newOrders` CHANGE COLUMN `time` `time` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`ScOrders` CHANGE COLUMN `time` `time` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+ALTER TABLE `celtrade`.`workOrders` CHANGE COLUMN `time` `time` TIMESTAMP NOT NULL DEFAULT now()  ;
+
+
+-- -----------------------------------------------------
+-- Placeholder table for view `celtrade`.`allIssues`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `celtrade`.`allIssues` (`idIssues` INT, `issueName` INT, `issuetype` INT, `priority` INT, `type` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `celtrade`.`issuesClosed`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `celtrade`.`issuesClosed` (`idIssues` INT, `username` INT, `depName` INT, `issueName` INT, `issuetype` INT, `priority` INT, `type` INT, `'closedAt'` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `celtrade`.`issuesOpen`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `celtrade`.`issuesOpen` (`idIssues` INT, `userOpenID` INT, `username` INT, `depOpenID` INT, `depOpenFor` INT, `issueName` INT, `issuetype` INT, `priority` INT, `type` INT, `'openedTime'` INT);
+
+-- -----------------------------------------------------
+-- Placeholder table for view `celtrade`.`userComments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `celtrade`.`userComments` (`idIssues` INT, `idusers` INT, `depName` INT, `comment` INT, `commented` INT, `username` INT, `issueName` INT, `issuetype` INT, `priority` INT, `type` INT);
+
+
+USE `celtrade`;
+
+-- -----------------------------------------------------
+-- View `celtrade`.`allIssues`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `celtrade`.`allIssues`;
+USE `celtrade`;
+CREATE  OR REPLACE VIEW `celtrade`.`allIssues` AS
+select idIssues,issueName,issuetype,priority,type from Issues inner join issuePriority on 
+    Issues.issuePriority=issuePriority.idIssuePriority inner join Status on 
+        Issues.resolveStatus=Status.idStatus;
+
+
+USE `celtrade`;
+
+-- -----------------------------------------------------
+-- View `celtrade`.`issuesClosed`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `celtrade`.`issuesClosed`;
+USE `celtrade`;
+CREATE  OR REPLACE VIEW `celtrade`.`issuesClosed` AS
+    select idIssues,username,department.depName,issueName,issuetype,priority,type,TIMESTAMPDIFF(MINUTE,closedAt,now())as 'closedAt' from userDepartment 
+        inner join issueClosed on userDepartment.idusers=issueClosed.closedBy
+            inner join department on issueClosed.closeDepID=department.iddepartment
+                inner join allIssues on allIssues.idIssues=issueClosed.issueID;
+            ;
+
+
+USE `celtrade`;
+
+-- -----------------------------------------------------
+-- View `celtrade`.`issuesOpen`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `celtrade`.`issuesOpen`;
+USE `celtrade`;
+CREATE  OR REPLACE VIEW `celtrade`.`issuesOpen` AS
+   select idIssues,idusers as userOpenID,username,iddepartment as depOpenID,depName as depOpenFor,issueName,issuetype,priority,type,TIMESTAMPDIFF(MINUTE,openedTime,now()) as 'openedTime' 
+        from allIssues inner join issueOpen on issueOpen.issueID=allIssues.idIssues inner join users on 
+            users.idusers=issueOpen.openedBy inner join department on department.iddepartment=issueOpen.openedFor;
+
+
+USE `celtrade`;
+
+-- -----------------------------------------------------
+-- View `celtrade`.`userComments`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `celtrade`.`userComments`;
+USE `celtrade`;
+CREATE  OR REPLACE VIEW `celtrade`.`userComments` AS
+    select idIssues,idusers,depName,`comment`,commented,username,issueName,issuetype,priority,type from userDepartment
+        inner join comments on userDepartment.idusers=comments.users right join allIssues
+            on allIssues.idIssues=comments.issueID;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addNewIssue`;
+
+DELIMITER $$
+USE `celtrade`$$
+create procedure addNewIssue(in issuename varchar(100),in issueType varchar(100),in openfor int,in openby int,in prior int)
+begin
+set @issueName = issuename;
+set @issueType = issueType;
+set @opBy = openby;
+set @openFor = openfor;
+set @priority = prior;
+
+insert into Issues(issueName,issueType,issuePriority)values(@issueName,@issueType,@priority);
+set @issueID = last_insert_id();
+insert into issueOpen(issueID,openedBy,openedFor)values(@issueID,@opBy,@openfor);
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addComment`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure addComment(in commentt varchar(100),in userid int,in issueId int)
+begin
+set @comme = commentt;
+set @userID = userid;
+set @issueID = issueid;
+insert into comments(`comment`,users,issueID)values(@comme,@userID,@issueID);
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`openIssuesForDepName`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure openIssuesForDepName(in dep varchar(100))
+begin
+set @depName = dep;
+    prepare stmt from "select * from issuesOpen where depOpenFor like ? order by priority,openedTime desc limit 0,5";
+    execute stmt using @depName;
+end$$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`closeIssuesByDepName`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+
+create procedure closeIssuesByDepName(in dep varchar(100))
+begin
+set @depName = dep;
+    prepare stmt from "select * from issuesClosed where depName like ? order by 1 desc limit 0,2";
+    execute stmt using @depName;
+end$$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`resolvedIssuesByDepName`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+
+create procedure resolvedIssuesByDepName(in dep varchar(100))
+begin
+set @depName = dep;
+    prepare stmt from "select * from issuesResolved where depName like ? order by 1 desc limit 0,2";
+    execute stmt using @depName;
+end$$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addSession`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure addSession(in username varchar(100),in session varchar(100),in ip varchar(100),in created DATE,in lastAccess DATE)
+begin
+set @user = username;
+set @sessionID = session;
+set @ipAdr = ip;
+set @created = created;
+set @lastAccess = lastAccess; 
+prepare statement from "select idusers into @userID from users where username like ?";
+execute statement using @user;
+insert into sessions(userLogged,sessionID,ipAdress,start,lastAccess)values
+(@userID,@sessionID,@ipAdr,@created,@lastAccess);
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addNewOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure addNewOrders(in user int)
+begin
+set @user = user;
+prepare statement from "insert into newOrders(addedBy)values(?)";
+execute statement using @user;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`viewNewOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure viewNewOrders()
+begin
+select time,username,viewed from newOrders inner join users on users.idusers=newOrders.addedBy where viewed=0 order by 1 desc limit 1;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`updateNewOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure updateNewOrders(in time Timestamp)
+begin
+set @time_T = time ;
+update newOrders set viewed=1 where time=@time_T;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addScOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+
+create procedure addScOrders(in user int)
+begin
+set @user = user;
+prepare statement from "insert into ScOrders(addedBy)values(?)";
+execute statement using @user;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`viewScOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+
+create procedure viewScOrders()
+begin
+select time,username,viewed from ScOrders inner join users on users.idusers=ScOrders.addedBy where viewed=0 order by 1 desc limit 1;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`updateIssue`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure updateIssue(in issueID int,in userId int,in status int,in cstatus int)
+begin
+set @openBy = userId;
+set @status = status;
+set @cStatus = cstatus;
+set @issueID = issueID;
+case @cStatus
+    when 1 then 
+      prepare stmt from  "create temporary table currentIssue select issueID,openedBy as 'opened',openedFor as 'openedFor' from issueOpen where issueID=? and openedBy=?";
+        execute stmt using @issueID,@openBy;
+      prepare stmt from  "delete from issueOpen where issueID=?  order by issueID desc limit 1";
+        execute  stmt using @issueID;
+    when 2 then 
+        prepare stmt from "create temporary table currentIssue select issueID,closedBy as 'opened',closedDepID as 'openedFor' from issueClosed where issueID=? and closedBy=? limit 1"; 
+            execute stmt using @issueID,@openBy;
+        prepare stmt from "delete from issueClosed where issueID= order by issueID desc limit 1";
+            execute stmt using @issueID;
+    when 3 then 
+        prepare stmt from "create temporary table currentIssue select issueID,resolvedBy as 'opened',resolvedDepId as 'openedFor' from issueResolved where issueID=? and resolvedBy=? limit 1";
+            execute stmt using @issueID,@openBy;
+        prepare stmt from "delete from issueResolved where isueId=? order by issueID desc limit 1";
+            execute stmt using @issueID;
+end case;
+
+case @status
+    when 1 then 
+        insert into issueOpen(issueID,openBy,openedFor) select issueID,opened,openedFor from currentIssue order by issueID limit 1;
+        drop temporary table currentIssue;
+    when 2 then
+        insert into issueClosed(issueID,closedBy,closeDepID) select issueID,opened ,openedFor from currentIssue order by issueID limit 1;
+        drop temporary table currentIssue;
+    when 3 then 
+        insert into issueResolved(issueID,resolvedBy,resolvedDepID) select issueID,opened,openedFor from currentIssue order by issueID limit 1;
+        drop temporary table currentIssue;
+    end case;
+update Issues set resolveStatus=@status where idIssues=@issueID;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`addWorkOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+create procedure addWorkOrders(in user int)
+begin
+set @user = user;
+prepare statement from "insert into workOrders(addedBy)values(?)";
+execute statement using @user;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`viewWorkOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+create procedure viewWorkOrders()
+begin
+prepare  stmt from "select time,username,viewed from workOrders inner join users on users.idusers=workOrders.addedBy where viewed=0 order by 1 desc limit 1;";
+execute  stmt;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`updateWorkOrders`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+
+
+create procedure updateWorkOrders(in time Timestamp)
+begin
+set @time_T = time ;
+prepare stmt from "update workOrders set viewed=1 where time=?;";
+execute stmt using @time_T;
+end $$
+
+DELIMITER ;
+
+USE `celtrade`;
+DROP procedure IF EXISTS `celtrade`.`changePass`;
+
+DELIMITER $$
+USE `celtrade`$$
+
+
+create procedure changePass(in user int,in pass varchar(100))
+begin
+set @user = user;
+set @passw = pass;
+prepare stmt from "update users set password=md5(?) where idusers=?;";
+execute stmt using @passw,@user;
+end $$
+
+DELIMITER ;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
