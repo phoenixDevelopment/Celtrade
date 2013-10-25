@@ -250,7 +250,7 @@ public class ListDeps extends HttpServlet {
 		deps.clear();
 		
 		if(isUserAllowedtoAddNewOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");
@@ -275,7 +275,7 @@ public class ListDeps extends HttpServlet {
 			
 		}
 		//if(isUserAllowedToViewNewOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");
@@ -293,7 +293,7 @@ public class ListDeps extends HttpServlet {
 			out.println("</div>"); // col width 33 ends
 		//}
 		if(isUserAllowedtoAddScOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");
@@ -317,7 +317,7 @@ public class ListDeps extends HttpServlet {
 			out.println("</div>"); // col width 33 ends
 			}
 		//if(isUserAllowedToViewScOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");
@@ -335,7 +335,7 @@ public class ListDeps extends HttpServlet {
 			out.println("</div>"); // col width 33 ends
 		//}
 		if(isUserAllowedtoAddWorkOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");
@@ -359,7 +359,7 @@ public class ListDeps extends HttpServlet {
 			out.println("</div>"); // col width 33 ends
 			}
 		//if(isUserAllowedToViewWorkOrders(loggedUser)){
-			out.println("<div class=\"col width-100 ui-sotable\">");
+			out.println("<div class=\"col width-100 ui-sotable\" style=\" margin-bottom: 1px; padding-bottom: 1px; height: 50px; \">");
 			out.println("<div class=\"sortable\" widgetid=\"widgetUserSettingsgetPlugun\">");
 			out.println("<div id=\"widgetUserSettingsgetPlugin\" class=\"widget\">");
 			out.println("<div class=\"widgetTop\">");

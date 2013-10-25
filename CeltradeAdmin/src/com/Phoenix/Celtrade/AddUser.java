@@ -65,12 +65,18 @@ public class AddUser extends HttpServlet {
 		int depID = Integer.parseInt(request.getParameter("department"));
 		if(request.getParameter("orderAllowed") != null){
 			orderAllowed = true;
+		}else{
+			orderAllowed = false;
 		}
 		if(request.getParameter("schecdulesAllowed") != null){
 			schedulesAllowed = true;
+		}else{
+			schedulesAllowed = false;
 		}
 		if(request.getParameter("wrkOrdersAllowed") != null){
 			wrkOrderAllowed = true;
+		}else{
+			wrkOrderAllowed =false;
 		}
 		int status = addUsers(username,useremail,password,depID,orderAllowed,schedulesAllowed,wrkOrderAllowed);
 		if(status > 0){

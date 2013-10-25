@@ -306,7 +306,7 @@ public class main extends HttpServlet {
 			out.println("<div id=\"header\">");
 			out.println("<span id=\"logo\">");
 			out.println("<a href=\"Celtrade\" title=\"Powered by NetLine Solutions\" style=\"text-decoration: none;\">");
-			out.println("<img src=\"images/celtrade24.jpg\" width=\"800\" alt=\"Powered by Netline Solutions\" style=\"margin-left: 10px\" height=\"100\" class=\"ie-hide\">");
+			out.println("<img src=\"images/celtrade24.jpg\" width=\"800\" height=\"100\" alt=\"Powered by Netline Solutions\" style=\"margin-left: 10px\" height=\"100\" class=\"ie-hide\">");
 			out.println("<!--[if lt IE 9]>");
 			out.println("<img src=\"\" alt=\"Powered by Netline Solutions\" style='margin-left:10px' height='50'/>");
 			out.println("<![endif]--></a>");

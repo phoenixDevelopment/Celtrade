@@ -69,7 +69,7 @@ public class ViewScOrders extends HttpServlet {
 				out.println("<div id=\"dialog\" title=\"Orders have Updated\">");
 				out.println("<p> Updated Schedules On "+res.getTimestamp("time").toLocaleString()+" By "+res.getString("username")+"</p>");
 				out.println("</div>");
-				status = updateScOrders(res.getTimestamp("time"));
+				//status = updateScOrders(res.getTimestamp("time"));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
