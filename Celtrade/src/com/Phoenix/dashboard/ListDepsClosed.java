@@ -99,7 +99,7 @@ public class ListDepsClosed extends HttpServlet {
 			stmt.setString(1, depN);
 			ResultSet res = stmt.executeQuery();
 			while(res.next()){
-				openIssuesDep.add(new OpenIssue(res.getString("username"),res.getString("depName"),res.getInt("idIssues"), res.getString("issueName"), res.getString("issuetype"), res.getString("priority"), res.getString("type"),res.getInt("closedAt")));			
+				openIssuesDep.add(new OpenIssue(res.getString("username"),res.getString("depClosedFor"),res.getInt("idIssues"), res.getString("issueName"), res.getString("issuetype"), res.getString("priority"), res.getString("type"),res.getInt("closedTime")));			
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

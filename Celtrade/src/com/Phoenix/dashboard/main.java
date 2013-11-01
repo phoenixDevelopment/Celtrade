@@ -419,8 +419,8 @@ public class main extends HttpServlet {
 			out.println("<tr>");
 			out.println("<td class=\"label labeleven\" style=\"width:25%\"><label>Issue Open For :</label>");
 			out.println("</td>");
-			out.println("<td><select name=\"openFor\">");
-			out.println("<option value=\"-1\" selected>Select</option>"); //print from database
+			out.println("<td><select name=\"openFor\" multiple>");
+			//out.println("<option value=\"-1\" selected>Select</option>"); //print from database
 			//out.println("<option value="2">User2</option>");
 			for(int i=0;i<deps.size();i++){
 				out.println("<option value=\""+deps.get(i).getDepID()+"\">"+deps.get(i).getDepName()+"</option>");
