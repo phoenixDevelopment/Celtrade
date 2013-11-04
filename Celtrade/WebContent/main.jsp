@@ -8,7 +8,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Celtrade CP24 DashBoard </title>
+<title>Celtrade CP24 DashBoard</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="generator" content="Celtrade DashBoard">
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -27,6 +27,40 @@
 		 	display: none;
 		 }
 		 </style>
+		
+		 <script type="text/javascript">
+		 function checkNewIssues(){
+			 var xmlhttp;
+		 if (window.XMLHttpRequest)
+		   {// code for IE7+, Firefox, Chrome, Opera, Safari
+		   xmlhttp=new XMLHttpRequest();
+		   }
+		 else
+		   {// code for IE6, IE5
+		   xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		 xmlhttp.open("GET","/Celtrade/newIssueCreated.do",true);
+		 xmlhttp.send();
+		 
+		 xmlhttp.onreadystatechange=function()
+		  {
+		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		    {
+		    	if(xmlhttp.responseText == "OK"){
+		    		
+		    			if(document.title == "Celtrade CP24 DashBoard"){
+		    				document.title = "Celtrade CP24 DashBoard -- New issue!";
+		    			}else{
+		    				document.title = "Celtrade CP24 DashBoard";
+		    			}
+		    		
+		    	}else{
+		    		document.title = "Celtrade CP24 DashBoard";
+		    	}
+		    }
+		  }
+		 }
+		 </script>
 			<%
 			ArrayList<String> status = new ArrayList<String>();
 			ServletContext  context = this.getServletContext();
@@ -59,7 +93,7 @@
 		out.println("$(\"#ajaxLoading\").hide();");
 		out.println("$(\"#dashboardOnWidgetArea\").load('ListDeps.do');");
 		out.println("$.ajaxSetup({ cache: false });");
-		out.println("setInterval(function(){$('#dashboardOnWidgetArea').load('ListDeps.do');},3000);");
+		out.println("setInterval(function(){$('#dashboardOnWidgetArea').load('ListDeps.do');checkNewIssues();},3000);");
 		out.println("});");
 		out.println("function validateForm(){");
 		out.println("var res = confirm(\"Are You Sure want to Update?\");");

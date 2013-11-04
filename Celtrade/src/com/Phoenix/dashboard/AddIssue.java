@@ -82,7 +82,7 @@ public class AddIssue extends HttpServlet {
 						 PreparedStatement stmt2 = conn.prepareStatement("call addIssueDepJoin(?,?)");
 						 stmt2.setInt(1, Integer.valueOf(deps[i]));
 						 stmt2.setInt(2, res.getInt("issueID"));
-						 status = stmt2.executeUpdate();
+						 stmt2.executeUpdate();
 					 }
 				 }
 			 }
