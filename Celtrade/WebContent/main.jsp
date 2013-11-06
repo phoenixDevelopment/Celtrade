@@ -8,7 +8,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Celtrade CP24 DashBoard</title>
+<title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="generator" content="Celtrade DashBoard">
 <link rel="shortcut icon" href="images/favicon.ico">
@@ -29,6 +29,9 @@
 		 </style>
 		
 		 <script type="text/javascript">
+		 	var count = 0;
+			var title = "";
+			
 		 function checkNewIssues(){
 			 var xmlhttp;
 		 if (window.XMLHttpRequest)
@@ -46,19 +49,22 @@
 		  {
 		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
 		    {
-		    	if(xmlhttp.responseText == "OK"){
+		    	if(xmlhttp.responseText.toUpperCase() == "OK"){
 		    		
-		    			if(document.title == "Celtrade CP24 DashBoard"){
-		    				document.title = "Celtrade CP24 DashBoard -- New issue!";
+		    			if(count % 2){
+		    				title = "New issue!" + count;
 		    			}else{
-		    				document.title = "Celtrade CP24 DashBoard";
+		    				title = "Celtrade CP24 DashBoard" + count;
 		    			}
 		    		
 		    	}else{
-		    		document.title = "Celtrade CP24 DashBoard";
+		    		   title = "Celtrade CP24 DashBoard";
 		    	}
+		    	
+		    	document.title = title;
 		    }
 		  }
+		 	count++;
 		 }
 		 </script>
 			<%
@@ -93,7 +99,7 @@
 		out.println("$(\"#ajaxLoading\").hide();");
 		out.println("$(\"#dashboardOnWidgetArea\").load('ListDeps.do');");
 		out.println("$.ajaxSetup({ cache: false });");
-		out.println("setInterval(function(){$('#dashboardOnWidgetArea').load('ListDeps.do');checkNewIssues();},3000);");
+		out.println("setInterval(function(){$('#dashboardOnWidgetArea').load('ListDeps.do');},3000);");
 		out.println("});");
 		out.println("function validateForm(){");
 		out.println("var res = confirm(\"Are You Sure want to Update?\");");
@@ -184,8 +190,8 @@
 			}
  	%>
 </head>
-<body style="display:block">
-			<div id="root">
+<body style="display:block" onload="setInterval(function(){checkNewIssues();}, 1000);">
+ 			<div id="root">
 			<!-- /*out.println("<div id=\"topBars\">
 			out.println("<div id=\"topRightBar\">");
 			getWeather();
