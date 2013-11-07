@@ -26,6 +26,8 @@ public class Main extends HttpServlet {
     private Connection conn; 
     private int cPage = 1;
     private ArrayList<Department> deps = new ArrayList<Department>();
+    private String loggedUser;
+    
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -39,14 +41,23 @@ public class Main extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		out = response.getWriter();
-		ServletContext context = this.getServletContext();
-		conn = (Connection) context.getAttribute("databaseConn");
-		request.getSession().setAttribute("cPage", cPage);
-		getDeps();
-		request.getSession().setAttribute("deps", deps);
-		RequestDispatcher reqd = request.getRequestDispatcher("/main.jsp");
-		reqd.forward(request, response);
+		try{
+			loggedUser = (String)this.getServletContext().getAttribute("loggedUser");
+			if(loggedUser == null){
+				throw new NullPointerException();
+			}
+			out = response.getWriter();
+			ServletContext context = this.getServletContext();
+			conn = (Connection) context.getAttribute("databaseConn");
+			request.getSession().setAttribute("cPage", cPage);
+			getDeps();
+			request.getSession().setAttribute("deps", deps);
+			RequestDispatcher reqd = request.getRequestDispatcher("/main.jsp");
+			reqd.forward(request, response);
+		}catch(NullPointerException ex){
+			RequestDispatcher reqd = request.getRequestDispatcher("/");
+			reqd.forward(request, response);
+		}
 	}
 
 	/**
@@ -54,6 +65,19 @@ public class Main extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		try{
+			out = response.getWriter();
+			ServletContext context = this.getServletContext();
+			conn = (Connection) context.getAttribute("databaseConn");
+			request.getSession().setAttribute("cPage", cPage);
+			getDeps();
+			request.getSession().setAttribute("deps", deps);
+			RequestDispatcher reqd = request.getRequestDispatcher("/main.jsp");
+			reqd.forward(request, response);
+		}catch(NullPointerException ex){
+			RequestDispatcher reqd = request.getRequestDispatcher("/");
+			reqd.forward(request, response);
+		}
 	}
 	
 	private void getDeps(){

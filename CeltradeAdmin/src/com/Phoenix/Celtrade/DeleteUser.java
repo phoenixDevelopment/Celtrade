@@ -25,7 +25,7 @@ public class DeleteUser extends HttpServlet {
 	private PrintWriter out;
     private Connection conn; 
     private int cPage = 4;  
-    private ArrayList<User> users = new ArrayList<User>();
+    private ArrayList<Department> dep = new ArrayList<Department>();
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -39,14 +39,23 @@ public class DeleteUser extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		out = response.getWriter();
-		ServletContext context = this.getServletContext();
-		conn = (Connection) context.getAttribute("databaseConn");
-		request.getSession().setAttribute("cPage", cPage);
-		getUsers();
-		request.getSession().setAttribute("users", users);
-		RequestDispatcher reqd = request.getRequestDispatcher("/deleteuser.jsp");
-		reqd.forward(request, response);
+		try{
+			out = response.getWriter();
+			ServletContext context = this.getServletContext();
+			conn = (Connection) context.getAttribute("databaseConn");
+			request.getSession().setAttribute("cPage", cPage);
+			if(request.getParameter("dept") != null){
+				getUsers(Integer.parseInt(request.getParameter("dept"))); 
+			}else{
+				getDepartments();
+				request.getSession().setAttribute("deps", dep);
+				RequestDispatcher reqd = request.getRequestDispatcher("/deleteuser.jsp");
+				reqd.forward(request, response);
+			}
+		}catch(NullPointerException ex){
+			RequestDispatcher reqd = request.getRequestDispatcher("/");
+			reqd.forward(request, response);
+		}
 	}
 
 	/**
@@ -60,11 +69,16 @@ public class DeleteUser extends HttpServlet {
 		request.getSession().setAttribute("cPage", cPage);
 		if(request.getParameter("users") != null){
 			deleteUser(Integer.parseInt(request.getParameter("users")));
+			getDepartments();
 		}
-		getUsers();
-		request.getSession().setAttribute("users", users);
-		RequestDispatcher reqd = request.getRequestDispatcher("/deleteuser.jsp");
-		reqd.forward(request, response);
+		if(request.getParameter("dept") != null){
+			getUsers(Integer.parseInt(request.getParameter("dept"))); 
+		}else{
+			getDepartments();
+			request.getSession().setAttribute("deps", dep);
+			RequestDispatcher reqd = request.getRequestDispatcher("/deleteuser.jsp");
+			reqd.forward(request, response);
+		}
 	}
 	
 	private int deleteUser(int userid){
@@ -80,12 +94,31 @@ public class DeleteUser extends HttpServlet {
 		return status;
 	}
 	
-	private void getUsers(){
+	private void getUsers(int dep){
 		try {
-			PreparedStatement stmt = conn.prepareStatement("select distinct username,idusers from users");
+			PreparedStatement stmt = conn.prepareStatement("select distinct username,idusers from users where department=?");
+			stmt.setInt(1, dep);
 			ResultSet res = stmt.executeQuery();
+			out.println("<td class=\"label labeleven\" style=\"width:25%\"><label>Users :</label>");
+			out.println("</td>");
+			out.println("<td><select name=\"users\">");
 			while(res.next()){
-				users.add(new User(res.getInt("idusers"), res.getString("username")));
+				out.println("<option value="+res.getInt("idusers")+">"+res.getString("username")+"</option>"); 
+			}
+			out.println("</select></td>");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void getDepartments(){
+		try {
+			PreparedStatement stmt = conn.prepareStatement("select distinct depName,iddepartment from department");
+			ResultSet res = stmt.executeQuery();
+			dep.clear();
+			while(res.next()){
+				dep.add(new Department(res.getInt("iddepartment"), res.getString("depName")));
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -94,3 +127,6 @@ public class DeleteUser extends HttpServlet {
 	}
 
 }
+
+
+

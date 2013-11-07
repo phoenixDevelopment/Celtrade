@@ -10,6 +10,7 @@
 	Connection conn = (Connection)cntxt.getAttribute("databaseConn");
 	ArrayList<Department> deps =  (ArrayList<Department>) request.getSession().getAttribute("deps");
 	int cpage = (Integer)request.getSession().getAttribute("cPage");
+	String loggedUser = (String)this.getServletContext().getAttribute("loggedUser");
 %> 
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -73,9 +74,9 @@ return res;
 			<div id="header">
 			<span id="logo">
 			<a href="Celttade" title="Powered by NetLine Solutions" style="text-decoration: none;">
-			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style="margin-left: 10px" height="40" class="ie-hide">
+			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style="margin-left: 10px" height="100" class="ie-hide">
 			<!--[if lt IE 9]>
-			<img src="" alt="Powered by Netline Solutions" style='margin-left:10px' height='50'/>
+			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style='margin-left:10px' height='50'/>
 			<![endif]--></a>
 			
 			<div style="display: block !important; width: 320px; text-align: center; font-family: sans-serif; font-size: 12px; float:right;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:00000.11.71624&amp;bannertypeclick=wu_clean2day" title="Mississauga, Ontario Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_clean2day_metric_cond&amp;airportcode=CYYZ&amp;ForcedCity=Mississauga&amp;ForcedState=Canada&amp;wmo=71624&amp;language=EN" alt="Find more about Weather in Mississauga, CA" width="300"></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:00000.11.71624&amp;bannertypeclick=wu_clean2day" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
@@ -117,10 +118,11 @@ return res;
 			<span id="header_message" class="header_info">
 			<span class="header_short">
 			<!--  Logged user -->
+			<% out.println("Welcome "+loggedUser); %>
 			</span>
 			<span class="header_full">
 			<!--  Logged user -->
-&nbsp;&nbsp&nbsp;
+			<% out.println("Welcome "+loggedUser); %>
 			<a href="Settings.do">Change Password</a>&nbsp;&nbsp;
 			<a href="Logout.do">Log Out</a>
 			</span>

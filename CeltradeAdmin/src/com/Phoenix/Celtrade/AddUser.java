@@ -29,6 +29,8 @@ public class AddUser extends HttpServlet {
     private Boolean orderAllowed = false ;
     private Boolean schedulesAllowed = false;
     private Boolean wrkOrderAllowed = false;
+    private String loggedUser;
+    
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -42,12 +44,21 @@ public class AddUser extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		out = response.getWriter();
-		ServletContext context = this.getServletContext();
-		conn = (Connection) context.getAttribute("databaseConn");
-		request.getSession().setAttribute("cPage", cPage);
-		RequestDispatcher reqd = request.getRequestDispatcher("/Main.do");
-		reqd.forward(request, response); 
+		try{
+			loggedUser = (String)this.getServletContext().getAttribute("loggedUser");
+			if(loggedUser == null){
+				throw new NullPointerException();
+			}
+			out = response.getWriter();
+			ServletContext context = this.getServletContext();
+			conn = (Connection) context.getAttribute("databaseConn");
+			request.getSession().setAttribute("cPage", cPage);
+			RequestDispatcher reqd = request.getRequestDispatcher("/Main.do");
+			reqd.forward(request, response); 
+		}catch(NullPointerException ex){
+			RequestDispatcher reqd = request.getRequestDispatcher("/");
+			reqd.forward(request, response);
+		}
 	}
 
 	/**
@@ -55,33 +66,38 @@ public class AddUser extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		out = response.getWriter();
-		ServletContext context = this.getServletContext();
-		conn = (Connection) context.getAttribute("databaseConn");
-		request.getSession().setAttribute("cPage", cPage);
-		String username = request.getParameter("userName");
-		String useremail = request.getParameter("userEmail");
-		String password = request.getParameter("password");
-		int depID = Integer.parseInt(request.getParameter("department"));
-		if(request.getParameter("orderAllowed") != null){
-			orderAllowed = true;
-		}else{
-			orderAllowed = false;
-		}
-		if(request.getParameter("schecdulesAllowed") != null){
-			schedulesAllowed = true;
-		}else{
-			schedulesAllowed = false;
-		}
-		if(request.getParameter("wrkOrdersAllowed") != null){
-			wrkOrderAllowed = true;
-		}else{
-			wrkOrderAllowed =false;
-		}
-		int status = addUsers(username,useremail,password,depID,orderAllowed,schedulesAllowed,wrkOrderAllowed);
-		if(status > 0){
-		RequestDispatcher reqd = request.getRequestDispatcher("/main.jsp");
-		reqd.forward(request, response);
+		try{
+			out = response.getWriter();
+			ServletContext context = this.getServletContext();
+			conn = (Connection) context.getAttribute("databaseConn");
+			request.getSession().setAttribute("cPage", cPage);
+			String username = request.getParameter("userName");
+			String useremail = request.getParameter("userEmail");
+			String password = request.getParameter("password");
+			int depID = Integer.parseInt(request.getParameter("department"));
+			if(request.getParameter("orderAllowed") != null){
+				orderAllowed = true;
+			}else{
+				orderAllowed = false;
+			}	
+			if(request.getParameter("schecdulesAllowed") != null){
+				schedulesAllowed = true;
+			}else{
+				schedulesAllowed = false;
+			}	
+			if(request.getParameter("wrkOrdersAllowed") != null){
+				wrkOrderAllowed = true;
+			}else{
+				wrkOrderAllowed =false;
+			}
+			int status = addUsers(username,useremail,password,depID,orderAllowed,schedulesAllowed,wrkOrderAllowed);
+			if(status > 0){
+			RequestDispatcher reqd = request.getRequestDispatcher("/Main.do");
+			reqd.forward(request, response);
+			}
+		}catch(NullPointerException ex){
+			RequestDispatcher reqd = request.getRequestDispatcher("/");
+			reqd.forward(request, response);
 		}
 	}
 	

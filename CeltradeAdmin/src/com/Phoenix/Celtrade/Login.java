@@ -80,7 +80,7 @@ public class Login extends HttpServlet {
 				ResultSet result = stmt.executeQuery();
 				if(result.next()){
 					this.loggedUser = result.getString("username");
-					req.getSession().setAttribute("loggedUser", loggedUser); 
+					this.getServletContext().setAttribute("loggedUser", loggedUser); 
 						resp.sendRedirect("/CeltradeAdmin/Main.do");
 				}else{
 					resp.sendRedirect("/CeltradeAdmin");

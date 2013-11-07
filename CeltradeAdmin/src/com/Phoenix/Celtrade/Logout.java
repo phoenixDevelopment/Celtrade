@@ -38,14 +38,15 @@ public class Logout extends HttpServlet {
 		out = response.getWriter();
 		ServletContext context = this.getServletContext();
 		conn = (Connection) context.getAttribute("databaseConn");
-		loggedUser = (String) request.getSession().getAttribute("loggedUser");
+		loggedUser = (String) this.getServletContext().getAttribute("loggedUser");
 		response.setContentType("text/html");
 		try {
 			request.getSession().invalidate();
+			this.getServletContext().removeAttribute("loggedUser"); 
 			response.sendRedirect("/CeltradeAdmin");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			response.sendRedirect("/CeltradeAdmin");
 		}
 		
 	}

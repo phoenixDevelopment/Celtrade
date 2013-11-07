@@ -9,8 +9,8 @@
 	ServletContext cntxt = this.getServletContext();
 	Connection conn = (Connection)cntxt.getAttribute("databaseConn");
 	ArrayList <Department> deps =  (ArrayList<Department>) request.getSession().getAttribute("deps");
-	ArrayList<User> users = (ArrayList<User> ) request.getSession().getAttribute("users");
 	int cpage = (Integer)request.getSession().getAttribute("cPage");
+	String loggedUser = (String)this.getServletContext().getAttribute("loggedUser");
 %> 
     
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -67,6 +67,35 @@ if(document.form1.password.value == ""){
 var res = confirm("Are You Sure want to Update?");
 return res;
 }
+
+	window.onload=function(){
+		loadUsers();
+	}
+
+function loadUsers(){
+	var x = document.getElementById("getDepts");
+	var dept = x.options[x.selectedIndex].value;
+	
+	var xmlhttp;
+	if (window.XMLHttpRequest)
+	  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  xmlhttp=new XMLHttpRequest();
+	  }
+	else
+	  {// code for IE6, IE5
+	  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	xmlhttp.open("GET","/CeltradeAdmin/DeleteUser.do?dept="+dept,true);
+	xmlhttp.send();
+	xmlhttp.onreadystatechange=function()
+	  {
+	  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+	    {
+	    document.getElementById("userDelete").innerHTML=xmlhttp.responseText;
+	    }
+	  }
+}
+
 </script>
 </head>
 <body style="display:block">
@@ -74,9 +103,9 @@ return res;
 			<div id="header">
 			<span id="logo">
 			<a href="Celttade" title="Powered by NetLine Solutions" style="text-decoration: none;">
-			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style="margin-left: 10px" height="40" class="ie-hide">
+			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style="margin-left: 10px" height="100" class="ie-hide">
 			<!--[if lt IE 9]>
-			<img src="" alt="Powered by Netline Solutions" style='margin-left:10px' height='50'/>
+			<img src="images/celtrade24.jpg" alt="Powered by Netline Solutions" style='margin-left:10px' height='50'/>
 			<![endif]--></a>
 			
 			<div style="display: block !important; width: 320px; text-align: center; font-family: sans-serif; font-size: 12px; float:right;"><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:00000.11.71624&amp;bannertypeclick=wu_clean2day" title="Mississauga, Ontario Weather Forecast" target="_blank"><img src="http://weathersticker.wunderground.com/weathersticker/cgi-bin/banner/ban/wxBanner?bannertype=wu_clean2day_metric_cond&amp;airportcode=CYYZ&amp;ForcedCity=Mississauga&amp;ForcedState=Canada&amp;wmo=71624&amp;language=EN" alt="Find more about Weather in Mississauga, CA" width="300"></a><br><a href="http://www.wunderground.com/cgi-bin/findweather/getForecast?query=zmw:00000.11.71624&amp;bannertypeclick=wu_clean2day" title="Get latest Weather Forecast updates" style="font-family: sans-serif; font-size: 12px" target="_blank">Click for weather forecast</a></span>
@@ -117,10 +146,11 @@ return res;
 			<span id="header_message" class="header_info">
 			<span class="header_short">
 			<!--  Logged user -->
+			<% out.println(loggedUser); %>
 			</span>
 			<span class="header_full">
 			<!--  Logged user -->
-&nbsp;&nbsp&nbsp;
+			<% out.println(loggedUser); %>
 			<a href="Settings.do">Change Password</a>&nbsp;&nbsp;
 			<a href="Logout.do">Log Out</a>
 			</span>
@@ -148,18 +178,22 @@ return res;
 <th class="widgetTopCreate"></th>
 </tr>
 <tr>
-<td class="label labeleven" style="width:25%"><label>User :</label>
+<td class="label labeleven" style="width:25%"><label>Department :</label>
 </td>
-<td><select name="users">
+<td><select name="department" id="getDepts" onchange="loadUsers()">
 <!-- print deps here  -->
 <%
-for(int i =0;i<users.size();i++){
-	out.println("<option value="+users.get(i).getUserID()+">"+users.get(i).getUserName()+"</option>");
+for(int i =0;i<deps.size();i++){
+	out.println("<option value="+deps.get(i).getDepID()+">"+deps.get(i).getDepName()+"</option>");
 }
-users.clear();
+deps.clear();
 %>
 </select>
 </td>
+</tr>
+<tr id="userDelete">
+
+
 </tr>
  <tr>
 <td><input name="submit" type="submit" value="Delete User" class="button"></td>
@@ -184,7 +218,7 @@ users.clear();
 </tr>
 <tr>
 <td class="label labelodd" style="width:25%"><label>Department  :</label></td>
-<td><select name="depts">
+<td><select name="depts" onchange="loadUsers();">
 <!-- print deps here  -->
 <%
 for(int i =0;i<deps.size();i++){
