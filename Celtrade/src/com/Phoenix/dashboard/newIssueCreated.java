@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.ws.Response;
 
 import com.Phoenix.dashboard.main.Display;
 import com.Phoenix.data.User;
@@ -44,7 +45,11 @@ public class newIssueCreated extends HttpServlet {
 		ServletContext context = this.getServletContext();
 		conn = (Connection) context.getAttribute("databaseConn");
 		loggedUser = (User) request.getSession().getAttribute("loggedUser");
-		checkIsnewIssueCreated();
+		if(checkIsnewIssueCreated()){
+			response.setStatus(response.SC_OK);
+		}else{
+			response.setStatus(response.SC_CREATED);
+		}
 	}
 
 	/**
@@ -54,18 +59,20 @@ public class newIssueCreated extends HttpServlet {
 		// TODO Auto-generated method stub
 	}
 	
-	private void checkIsnewIssueCreated(){
+	private boolean checkIsnewIssueCreated(){
+		boolean status = false;
 		try{
 			PreparedStatement stmt = conn.prepareStatement("select idNewIssueAdded,TIMESTAMPDIFF(MINUTE,added,now()) as 'openedSince' from newIssueAdded where TIMESTAMPDIFF(MINUTE,added,now()) < 4 order by 1 desc limit 1;");
 			ResultSet res = stmt.executeQuery();
 			if(res.next()){
-				out.println("OK");
+				status = true;
 			}else{
-				out.println("NOTOK");
+				status =false;
 			}
 		}catch(SQLException ex){
 			out.println("SQL Exception Occured");
 		}
+		return status;
 	}
 
 }

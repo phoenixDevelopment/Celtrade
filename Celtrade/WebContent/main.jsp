@@ -49,15 +49,8 @@
 		  {
 		  if (xmlhttp.readyState==4 && xmlhttp.status==200)
 		    {
-		    	if(xmlhttp.responseText.toUpperCase() == "OK"){
-		    		
-		    			if(count % 2){
-		    				title = "New issue!" + count;
-		    			}else{
-		    				title = "Celtrade CP24 DashBoard" + count;
-		    			}
-		    		
-		    	}else{
+		    		title = "New issue!";
+		    	}else if(xmlhttp.readyState==4 && xmlhttp.status == 201){
 		    		   title = "Celtrade CP24 DashBoard";
 		    	}
 		    	
